@@ -5,4 +5,8 @@ git pull origin ('branch name')
 ```
 
 to merge 
+make sure you are inside your branch
+``` bash 
+git merge ('branch name of you want to merge on your project')
+```
 
