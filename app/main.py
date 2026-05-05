@@ -1,6 +1,6 @@
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI
-from .routers import auth
+from routers import auth
 
 app = FastAPI(
     title=TruitR,
