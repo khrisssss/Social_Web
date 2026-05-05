@@ -1,9 +1,9 @@
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi import FastAPI
-from .routers import auth
+from fastapi import APIRouter
+from .routers import auth,post
 
 app = FastAPI(
-    title=TruitR,
+    title="TruitR",
 )
 
 origins = ["*"]

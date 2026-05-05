@@ -1,7 +1,7 @@
 from fastapi import FastApi 
 from pydantic import BaseModel
 
-post = FastApi(prefix="/post")
+router = APIRouter(prefix="/post", tags=["Posts"])
 
 class CreateUser(BaseModel):
     id: int 
@@ -14,4 +14,13 @@ class CreateMessage(BaseModel):
     content:str
 
 @post.post("/",)
-def create_post(post: 
+def home():
+    return OK
+
+@post.post("/register")
+def register_user (user: CreateUser):
+    password = get_password
+
+    conn = get_connection()
+    cursor = conn.cursor()
+
