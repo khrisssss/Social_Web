@@ -1,12 +1,14 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter
 from pydantic import BaseModel
 from database.database import get_connection
 
 router = APIRouter(prefix="/posts", tags=["Posts"])
 
+
 class CreatePost(BaseModel):
     user_id: int
     content: str
+
 
 @router.post("/")
 def create_post(post: CreatePost):
@@ -24,10 +26,29 @@ def create_post(post: CreatePost):
     post_id = cursor.lastrowid
     conn.close()
 
-    return {    
+    return {
         "message": "Post created successfully",
         "post_id": post_id,
         "user_id": post.user_id,
         "content": post.content,
     }
 
+
+class creator(BaseModel):
+    id: int
+
+
+@router.get("/user/{user_id}")
+def get_user_post(user_id: int):
+    conn = get_connection()
+    cursor = conn.cursor()
+    # get all the post from this specific user
+    cursor.execute("SELECT * from message WHERE creator_id = ?", (user_id,))
+    all_post = cursor.fetchall()
+    print("list: ", all_post)
+    conn.commit()
+    conn.close()
+    return {
+        "user_id": user_id,
+        "posts": [dict(post) for post in all_post]
+    }
