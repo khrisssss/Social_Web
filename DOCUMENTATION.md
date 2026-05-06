@@ -10,3 +10,6 @@ make sure you are inside your branch
 git merge ('branch name of you want to merge on your project')
 ```
 
+to launch FastApi 
+uvicorn app.main:app --reload
+

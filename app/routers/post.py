@@ -1,26 +1,33 @@
-from fastapi import FastApi 
+from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
+from database.database import get_connection
 
-router = APIRouter(prefix="/post", tags=["Posts"])
+router = APIRouter(prefix="/posts", tags=["Posts"])
 
-class CreateUser(BaseModel):
-    id: int 
-    username: str
-    password: str
-
-class CreateMessage(BaseModel):
-    id: int
+class CreatePost(BaseModel):
     user_id: int
-    content:str
+    content: str
 
-@post.post("/",)
-def home():
-    return OK
-
-@post.post("/register")
-def register_user (user: CreateUser):
-    password = get_password
-
+@router.post("/")
+def create_post(post: CreatePost):
     conn = get_connection()
     cursor = conn.cursor()
+
+    cursor.execute("SELECT id FROM user WHERE id = ?", (post.user_id,))
+    cursor.fetchone()
+
+    cursor.execute(
+        "INSERT INTO message (creator_id, content) VALUES (?, ?)",
+        (post.user_id, post.content),
+    )
+    conn.commit()
+    post_id = cursor.lastrowid
+    conn.close()
+
+    return {    
+        "message": "Post created successfully",
+        "post_id": post_id,
+        "user_id": post.user_id,
+        "content": post.content,
+    }
 

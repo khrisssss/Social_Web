@@ -1,6 +1,6 @@
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi import APIRouter
-from .routers import auth,post
+from fastapi import FastAPI
+from .routers import auth, post
 
 app = FastAPI(
     title="TruitR",
@@ -16,3 +16,4 @@ app.add_middleware(
 )
 
 app.include_router(auth.router)
+app.include_router(post.router)
