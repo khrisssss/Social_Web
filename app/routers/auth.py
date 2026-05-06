@@ -1,15 +1,17 @@
 from fastapi import APIRouter, Form
+from app.models.user import RegistrationUser
 
-router = APIRouter(tags=["Authentication"])
+app = APIRouter(tite="Registration")
 
-@router.post("/login")
-def login_a_user(
-    username: str = Form(...),
-    password: str = Form(...)
-):
-    
-    return {"access_token": username, "token_type": "bearer"}
 
-@router.post("/registration")
-def registrate_a_user()
+# welcome 
+@app.get("/")
+def welcome():
+    return {"message":"Welcome to your Registeration!"}
+
+
+@app.post("/register")
+def registration(user: RegistrationUser):
+    success = user.userID, user.username, user.password
+    password: str
     

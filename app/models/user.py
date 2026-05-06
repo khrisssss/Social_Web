@@ -1,10 +1,9 @@
 from pydantic import BaseModel
 
 
-class CreateUser(BaseModel):
-    id: int | None = None
+
+class RegistrationUser(BaseModel):
+    userID: int 
     username: str
-
-
-class UserIn(User):
     password: str
+    
