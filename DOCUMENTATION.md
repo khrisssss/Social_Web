@@ -1,15 +1,28 @@
-to change the branch to another branch 
-
-``` bash 
-git pull origin ('branch name')
-```
-
-to merge 
-make sure you are inside your branch
-``` bash 
-git merge ('branch name of you want to merge on your project')
-```
 
 to launch FastApi 
+``` bash
 uvicorn app.main:app --reload
+```
+
+
+
+to merge the work to test : 
+``` bash 
+git checkout test
+```
+
+Then get the latest version of test:
+``` bash 
+git pull origin test
+```
+
+Merge your branch into test branch:
+``` bash 
+git merge message
+```
+
+Then push test:
+``` bash 
+git push origin test
+```
 
