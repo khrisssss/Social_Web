@@ -52,3 +52,4 @@ def get_user_post(user_id: int):
         "user_id": user_id,
         "posts": [dict(post) for post in all_post]
     }
+
