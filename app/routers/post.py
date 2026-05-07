@@ -11,6 +11,7 @@ class CreatePost(BaseModel):
 
 
 @router.post("/")
+@router.post("/")
 def create_post(post: CreatePost):
     conn = get_connection()
     cursor = conn.cursor()
