@@ -2,6 +2,7 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from utils.auth_utils import hash_password, verify_password
 from database.database import get_connection
+import secrets
 
 
 router = APIRouter(tags=["Authentication"])
@@ -35,9 +36,10 @@ def registrate_a_user(userConnect: UserModel):
         raise HTTPException(status_code=400, detail="L'utilisateur existe déjà")
 
     hashed_password = hash_password(userConnect.password)
+    user_id = secrets.randbelow(10**15)
     cursor.execute(
-        "INSERT INTO user (pseudo, mot_de_passe) VALUES (?, ?)",
-        (userConnect.username, hashed_password)
+        "INSERT INTO user (id, pseudo, mot_de_passe) VALUES (?, ?, ?)",
+        (user_id, userConnect.username, hashed_password)
     )
     conn.commit()
     conn.close()
