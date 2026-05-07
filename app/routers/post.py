@@ -53,12 +53,12 @@ def get_user_post(user_id: int):
         "posts": [dict(post) for post in all_post]
     }
 
-@router.get("/")
-def get_all_post():
-    conn = get_connection()
-    cursor = conn.cursor()
-    cursor.execute("SELECT * FROM message ")
-    everything_post = cursor.fetchall()
-    conn.commit()
-    conn.close()
-    return  [dict(post) for post in everything_post]
+#@router.get("/")
+#def get_all_post():
+#    conn = get_connection()
+#    cursor = conn.cursor()
+#    cursor.execute("SELECT * FROM message ")
+#    everything_post = cursor.fetchall()
+#    conn.commit()
+#    conn.close()
+#    return  [dict(post) for post in everything_post]
