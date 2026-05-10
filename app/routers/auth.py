@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
-from utils.auth_utils import hash_password, verify_password
+from utils.auth_utils import hash_password, verify_password, create_access_token, get_current_user
 from database.database import get_connection
 import secrets
 
@@ -23,7 +23,8 @@ def login_a_user(userConnect: UserModel):
     if not user or not verify_password(userConnect.password, user["mot_de_passe"]):
         raise HTTPException(status_code=400, detail="Identification incorrect")
 
-    return {"User connected ": user["pseudo"]}
+    token = create_access_token(username=user["pseudo"], user_id=user["id"])
+    return {"access_token": token, "token_type": "bearer"}
 
 
 @router.post("/registration")

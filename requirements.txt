@@ -2,3 +2,5 @@ pysqlite3
 fastapi
 uvicorn
 passlib
+PyJWT
+python-dotenv
