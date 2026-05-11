@@ -3,3 +3,4 @@ fastapi
 uvicorn
 passlib
 python-multipart
+docker
