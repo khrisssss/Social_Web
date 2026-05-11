@@ -4,3 +4,4 @@ uvicorn
 passlib
 PyJWT
 python-dotenv
+python-multipart
