@@ -2,6 +2,10 @@ import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Avatar, AvatarBadge, AvatarFallback } from "@/components/ui/avatar"
+import Header from "@/components/header"
+import { Heart } from "lucide-react"
+import LikeButton from "@/components/likeButton"
 
 export default function Home() {
     const [posts, setPosts] = useState([])
@@ -56,16 +60,11 @@ export default function Home() {
     }
 
     return (
-        <div className="min-h-screen bg-background">
-            <nav className="border-b px-6 py-3 flex items-center justify-between">
-                <h1 className="text-lg font-semibold">Social Web</h1>
-                <Button variant="outline" size="sm" onClick={handleLogout}>
-                    Déconnexion
-                </Button>
-            </nav>
+        <div className="min-h-screen bg-gray-100">
+            <Header logout={handleLogout} />
 
-            <main className="max-w-xl mx-auto py-8 px-4 flex flex-col gap-6">
-                <Card>
+            <main className="max-w-3xl mx-auto py-8 px-4 flex flex-col gap-6">
+                <Card className="mt-20">
                     <CardContent className="pt-4">
                         <textarea
                             className="w-full resize-none bg-transparent outline-none text-sm min-h-20"
@@ -80,21 +79,32 @@ export default function Home() {
                         </div>
                     </CardContent>
                 </Card>
-
+                <div className="text-2xl font-bold">Feeds</div>
                 {loading ? (
                     <p className="text-sm text-muted-foreground text-center">Chargement...</p>
                 ) : posts.length === 0 ? (
                     <p className="text-sm text-muted-foreground text-center">Aucun post pour l'instant.</p>
                 ) : (
+
                     posts.map((post) => (
                         <Card key={post.id}>
                             <CardHeader className="pb-2">
-                                <CardTitle className="text-sm font-semibold">
-                                    @{post.author}
+
+                                <CardTitle className="flex items-center gap-2">
+                                    <Avatar className="h-10 w-10">
+                                        <AvatarFallback>CN</AvatarFallback>
+                                    </Avatar>
+                                    <div>
+                                        <p className="text-sm font-semibold">{post.author}</p>
+                                        <p className="text-xs text-gray-400">Il y a 2 heures</p>
+                                    </div>
                                 </CardTitle>
                             </CardHeader>
                             <CardContent>
                                 <p className="text-sm">{post.content}</p>
+                                <div className="flex content-between mt-8">
+                                    <LikeButton />
+                                </div>
                             </CardContent>
                         </Card>
                     ))
