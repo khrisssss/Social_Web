@@ -37,6 +37,7 @@ def create_tables():
     CREATE TABLE IF NOT EXISTS message (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         creator_id INTEGER NOT NULL,
+        creation_date DATETIME DEFAULT CURRENT_TIMESTAMP,
         content TEXT,
         image TEXT,
         FOREIGN KEY (creator_id) REFERENCES user(id) ON DELETE CASCADE
