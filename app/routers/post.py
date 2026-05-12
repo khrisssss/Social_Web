@@ -8,6 +8,7 @@ router = APIRouter(prefix="/posts", tags=["Posts"])
 class CreatePost(BaseModel):
     user_id: int
     content: str
+    timestamp: str
 
 
 @router.post("/")
@@ -19,8 +20,8 @@ def create_post(post: CreatePost):
     cursor.fetchone()
 
     cursor.execute(
-        "INSERT INTO message (creator_id, content) VALUES (?, ?)",
-        (post.user_id, post.content),
+        "INSERT INTO message (creator_id, content, timestamp) VALUES (?, ?, ?)",
+        (post.user_id, post.content, post.timestamp),
     )
     conn.commit()
     post_id = cursor.lastrowid
@@ -31,6 +32,7 @@ def create_post(post: CreatePost):
         "post_id": post_id,
         "user_id": post.user_id,
         "content": post.content,
+        "timestamp": post.timestamp,
     }
 
 
@@ -99,3 +101,27 @@ def count_likes(post_id: int):
     return {"post_id": post_id, "likes": like_count}
 
 
+class Comment (BaseModel):
+    content: str
+    user_id: int 
+    post_id: int 
+
+
+@router.post("/comment/{post_id}/comments")
+def comment_post(post_id: int, comment: Comment): 
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute(
+        "INSERT INTO comment (content, user_id, message_id) VALUES (?, ?, ?)",
+        (comment.content, comment.user_id, post_id),
+    )
+    conn.commit()
+    comment_id = cursor.lastrowid
+    conn.close()
+    return {
+        "message": "Commented successfully",
+        "comment_id": comment_id,
+        "post_id": post_id,
+        "user_id": comment.user_id,
+        "content": comment.content
+    }
