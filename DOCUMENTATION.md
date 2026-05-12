@@ -26,3 +26,11 @@ git push origin message
 git reset --hard origin/test
 ```
 This will make the local test branch exactly the same as GitHub test branch
+
+# create hugging face token
+
+we go on the link of our profile , we create new token after this we go to terminal we authentificate and paste our token 
+```bash
+hf auth login
+```
+

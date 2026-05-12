@@ -1,19 +1,21 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 from database.database import get_connection
 import datetime
+
+from utils.auth_utils import get_current_user
+
 
 router = APIRouter(prefix="/posts", tags=["Posts"])
 
 
 class CreatePost(BaseModel):
-    user_id: int
     content: str
     
 
 
 @router.post("/")
-def create_post(post: CreatePost):
+def create_post(post: CreatePost, current_user: dict = Depends(get_current_user)):
     conn = get_connection()
     cursor = conn.cursor()
 
@@ -25,6 +27,7 @@ def create_post(post: CreatePost):
     cursor.execute(
         "INSERT INTO message (creator_id, content, timestamp) VALUES (?, ?, ?)",
         (post.user_id, post.content, timestamp),
+
     )
     conn.commit()
     post_id = cursor.lastrowid
@@ -33,7 +36,7 @@ def create_post(post: CreatePost):
     return {
         "message": "Post created successfully",
         "post_id": post_id,
-        "user_id": post.user_id,
+        "author": current_user["username"],
         "content": post.content,
         "timestamp": post.timestamp,
     }
@@ -58,11 +61,11 @@ def get_user_post(user_id: int):
         "posts": [dict(post) for post in all_post]
     }
 
-
 @router.get("/")
 def get_all_post():
     conn = get_connection()
     cursor = conn.cursor()
+
     cursor.execute("SELECT * FROM message ")
     everything_post = cursor.fetchall()
     conn.commit()
@@ -128,3 +131,4 @@ def comment_post(post_id: int, comment: Comment):
         "user_id": comment.user_id,
         "content": comment.content
     }
+
