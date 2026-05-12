@@ -1,6 +1,7 @@
 from fastapi import APIRouter
 from pydantic import BaseModel
 from database.database import get_connection
+import datetime
 
 router = APIRouter(prefix="/posts", tags=["Posts"])
 
@@ -8,7 +9,7 @@ router = APIRouter(prefix="/posts", tags=["Posts"])
 class CreatePost(BaseModel):
     user_id: int
     content: str
-    timestamp: str
+    datetime: datetime.datetime
 
 
 @router.post("/")
