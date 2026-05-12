@@ -67,29 +67,35 @@ def get_all_post():
 
 class Likes(BaseModel):
     post_id: int
+    user_id: int
 
+@router.post("/like/{post_id}")
+def like_post(likes: Likes):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute(
+        "INSERT INTO like (user_id, message_id) VALUES (?, ?)",
+        (likes.user_id, likes.post_id),
+    )
+    conn.commit()
+    conn.close()
+    return {
+        "message": "Liked successfully",
+        "post_id": likes.post_id,
+        "user_id": likes.user_id,
+    }
 
 @router.post("/likes/{post_id}")
-def like_post(likes: Likes):
+def count_likes(post_id: int):
     #print("post id: ", likes.post_id)   
     conn = get_connection()
     cursor = conn.cursor()
     #print("post id: ", likes.post_id)
     cursor.execute(
-        "SELECT count(*) FROM like WHERE message_id = ?", (likes.post_id,))
+        "SELECT count(*) FROM like WHERE message_id = ?", (post_id,))
     like_count = cursor.fetchone()[0]
     conn.commit()
     conn.close()
-    return {"post_id": likes.post_id, "likes": like_count}
+    return {"post_id": post_id, "likes": like_count}
 
 
-@router.post("/unlike/{post_id}")
-def unlike_post(unlikes: Likes):
-    conn = get_connection()
-    cursor = conn.cursor()
-    cursor.execute(
-        "SELECT count(*) FROM dislike WHERE message_id = ?", (unlikes.post_id,))
-    like_count = cursor.fetchone()[0]
-    conn.commit()
-    conn.close()
-    return {"post_id": unlikes.post_id, "unlikes": like_count}
