@@ -81,3 +81,15 @@ def like_post(likes: Likes):
     conn.commit()
     conn.close()
     return {"post_id": likes.post_id, "likes": like_count}
+
+
+@router.post("/unlike/{post_id}")
+def unlike_post(unlikes: Likes):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute(
+        "SELECT count(*) FROM dislike WHERE message_id = ?", (unlikes.post_id,))
+    like_count = cursor.fetchone()[0]
+    conn.commit()
+    conn.close()
+    return {"post_id": unlikes.post_id, "unlikes": like_count}
