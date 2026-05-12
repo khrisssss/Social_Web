@@ -8,6 +8,17 @@ uvicorn app.main:app --reload
 
 ```
 
+# Make sure you are on your branch
+git checkout message
+
+# Download all branches from GitHub
+git fetch origin
+
+# Merge the frontend branch into your current branch (message)
+git merge origin/frontend
+
+# Push the updated message branch to GitHub
+git push origin message
 
 # remove your accidental changes from local TEST BRANCH
 

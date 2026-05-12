@@ -53,12 +53,31 @@ def get_user_post(user_id: int):
         "posts": [dict(post) for post in all_post]
     }
 
-#@router.get("/")
-#def get_all_post():
-#    conn = get_connection()
-#    cursor = conn.cursor()
-#    cursor.execute("SELECT * FROM message ")
-#    everything_post = cursor.fetchall()
-#    conn.commit()
-#    conn.close()
-#    return  [dict(post) for post in everything_post]
+
+@router.get("/")
+def get_all_post():
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM message ")
+    everything_post = cursor.fetchall()
+    conn.commit()
+    conn.close()
+    return [dict(post) for post in everything_post]
+
+
+class Likes(BaseModel):
+    post_id: int
+
+
+@router.post("/likes/{post_id}")
+def like_post(likes: Likes):
+    #print("post id: ", likes.post_id)   
+    conn = get_connection()
+    cursor = conn.cursor()
+    #print("post id: ", likes.post_id)
+    cursor.execute(
+        "SELECT count(*) FROM like WHERE message_id = ?", (likes.post_id,))
+    like_count = cursor.fetchone()[0]
+    conn.commit()
+    conn.close()
+    return {"post_id": likes.post_id, "likes": like_count}
