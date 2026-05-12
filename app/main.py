@@ -3,6 +3,7 @@ from fastapi import FastAPI
 from .routers import auth, post
 from .routers import auth, upload
 
+
 app = FastAPI(
     title="TruitR",
 )
