@@ -5,3 +5,7 @@ passlib
 PyJWT
 python-dotenv
 python-multipart
+diffusers
+torch --i
+transformers
+accelerate

@@ -49,10 +49,9 @@ def create_tables():
     CREATE TABLE IF NOT EXISTS response (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         message_id INTEGER NOT NULL,
-        creator_id INTEGER NOT NULL,
-        content TEXT NOT NULL,
-        FOREIGN KEY (message_id) REFERENCES message(id) ON DELETE CASCADE,
-        FOREIGN KEY (creator_id) REFERENCES user(id) ON DELETE CASCADE
+        parent_id INTEGER NOT NULL, 
+        FOREIGN KEY (parent_id) REFERENCES message(id) ON DELETE CASCADE, 
+        FOREIGN KEY (message_id) REFERENCES message(id) ON DELETE CASCADE
     )
     """)
 
