@@ -9,7 +9,7 @@ router = APIRouter(prefix="/posts", tags=["Posts"])
 class CreatePost(BaseModel):
     user_id: int
     content: str
-    datetime: datetime.datetime
+    
 
 
 @router.post("/")
@@ -20,9 +20,11 @@ def create_post(post: CreatePost):
     cursor.execute("SELECT id FROM user WHERE id = ?", (post.user_id,))
     cursor.fetchone()
 
+    timestamp = datetime.datetime.now()
+    
     cursor.execute(
         "INSERT INTO message (creator_id, content, timestamp) VALUES (?, ?, ?)",
-        (post.user_id, post.content, post.timestamp),
+        (post.user_id, post.content, timestamp),
     )
     conn.commit()
     post_id = cursor.lastrowid
