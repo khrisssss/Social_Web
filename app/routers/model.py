@@ -15,7 +15,7 @@ load_dotenv()
 class Prompt(BaseModel):
       prompt: str
 
-#HF_TOKEN = os.getenv("HF_TOKEN")
+
 router = APIRouter(tags=["model"])
 
 UPLOAD_FOLDER = "uploads"
