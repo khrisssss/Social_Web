@@ -11,7 +11,6 @@ router = APIRouter(prefix="/posts", tags=["Posts"])
 
 class CreatePost(BaseModel):
     content: str
-    
 
 
 @router.post("/")
@@ -19,16 +18,9 @@ def create_post(post: CreatePost, current_user: dict = Depends(get_current_user)
     conn = get_connection()
     cursor = conn.cursor()
 
-    cursor.execute("SELECT id FROM user WHERE id = ?", (post.user_id,))
-    cursor.fetchone()
+    cursor.execute("INSERT INTO message (creator_id, content) VALUES (?, ?)",
+        (current_user["id"], post.content),)
 
-    timestamp = datetime.datetime.now()
-    
-    cursor.execute(
-        "INSERT INTO message (creator_id, content, timestamp) VALUES (?, ?, ?)",
-        (post.user_id, post.content, timestamp),
-
-    )
     conn.commit()
     post_id = cursor.lastrowid
     conn.close()
@@ -38,7 +30,7 @@ def create_post(post: CreatePost, current_user: dict = Depends(get_current_user)
         "post_id": post_id,
         "author": current_user["username"],
         "content": post.content,
-        "timestamp": post.timestamp,
+        "created_at": datetime.datetime.now().isoformat()
     }
 
 
