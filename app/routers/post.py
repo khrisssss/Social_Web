@@ -2,8 +2,10 @@ from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 from database.database import get_connection
 import datetime
+from typing import Optional
 
 from utils.auth_utils import get_current_user
+from utils.comments_service import  get_comments_for_post
 
 
 router = APIRouter(prefix="/posts", tags=["Posts"])
@@ -28,7 +30,7 @@ def create_post(post: CreatePost, current_user: dict = Depends(get_current_user)
     return {
         "message": "Post created successfully",
         "post_id": post_id,
-        "author": current_user["username"],
+        "created_by": current_user["username"],
         "content": post.content,
         "created_at": datetime.datetime.now().isoformat()
     }
@@ -39,31 +41,43 @@ class creator(BaseModel):
 
 
 @router.get("/user/{user_id}")
-def get_user_post(user_id: int):
+def get_user_posts(user_id: int):
     conn = get_connection()
     cursor = conn.cursor()
-    # get all the post from this specific user
-    cursor.execute("SELECT * from message WHERE creator_id = ?", (user_id,))
-    all_post = cursor.fetchall()
-    print("list: ", all_post)
-    conn.commit()
+
+    cursor.execute("""
+        SELECT * FROM message
+        WHERE creator_id = ?
+        AND id NOT IN (SELECT message_id FROM response)
+    """, (user_id,))
+
+    posts = [dict(post) for post in cursor.fetchall()]
     conn.close()
-    return {
-        "user_id": user_id,
-        "posts": [dict(post) for post in all_post]
-    }
+
+    for post in posts:
+        post["comments"] = get_comments_for_post(post["id"])
+
+    return {"user_id": user_id, "posts": posts}
+
 
 @router.get("/")
-def get_all_post():
+def get_all_post(current_user: dict = Depends(get_current_user)):
     conn = get_connection()
     cursor = conn.cursor()
 
-    cursor.execute("SELECT * FROM message ")
-    everything_post = cursor.fetchall()
-    conn.commit()
-    conn.close()
-    return [dict(post) for post in everything_post]
+    cursor.execute("""
+        SELECT * FROM message
+        WHERE id NOT IN (SELECT message_id FROM response)
+        ORDER BY creation_date DESC
+    """)
 
+    posts = [dict(post) for post in cursor.fetchall()]
+    conn.close()
+
+    for post in posts:
+        post["comments"] = get_comments_for_post(post["id"])
+
+    return posts
 
 class Likes(BaseModel):
     post_id: int
@@ -85,7 +99,7 @@ def like_post(likes: Likes):
         "user_id": likes.user_id,
     }
 
-@router.post("/likes/{post_id}")
+@router.get("/likes/{post_id}")
 def count_likes(post_id: int):
     #print("post id: ", likes.post_id)   
     conn = get_connection()
@@ -101,26 +115,36 @@ def count_likes(post_id: int):
 
 class Comment (BaseModel):
     content: str
-    user_id: int 
-    post_id: int 
+    parent_id: Optional[int] = None
+    
 
-
-@router.post("/comment/{post_id}/comments")
-def comment_post(post_id: int, comment: Comment): 
+@router.post("/{post_id}/comment")
+def comment_post(post_id: int, comment: Comment, current_user: dict = Depends(get_current_user)):
     conn = get_connection()
     cursor = conn.cursor()
+
+    actual_parent = comment.parent_id if comment.parent_id else post_id
     cursor.execute(
-        "INSERT INTO comment (content, user_id, message_id) VALUES (?, ?, ?)",
-        (comment.content, comment.user_id, post_id),
-    )
-    conn.commit()
+        "INSERT INTO message (content, creator_id) VALUES (?, ?)",
+        (comment.content, current_user["id"]),)
+
     comment_id = cursor.lastrowid
+
+    cursor.execute(
+        "INSERT INTO response (message_id, parent_id) VALUES (?, ?)",
+        (comment_id, actual_parent),)
+    conn.commit()
     conn.close()
+
     return {
-        "message": "Commented successfully",
-        "comment_id": comment_id,
-        "post_id": post_id,
-        "user_id": comment.user_id,
-        "content": comment.content
+        "id": comment_id,
+        "content": comment.content,
+        "user_id": current_user["id"],
+        "parent_id": actual_parent,
+        "created_at": datetime.datetime.now().isoformat(),
+        "replies": []
     }
+
+
+
 
