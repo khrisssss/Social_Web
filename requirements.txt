@@ -7,6 +7,5 @@ python-dotenv
 python-multipart
 diffusers
 torch --i
-transformers
 accelerate
 python-dotenv
