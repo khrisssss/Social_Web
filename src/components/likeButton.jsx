@@ -5,7 +5,7 @@ export default function LikeButton() {
   const [liked, setLiked] = useState(false);
 
   return (
-    <button className="hover:scale-110 transition" onClick={() => setLiked(!liked)}>
+    <button className="hover:scale-110 transition flex gap-1 content-center items-center" onClick={() => setLiked(!liked)}>
       <Heart
         size={28}
         strokeWidth={1.5}
@@ -15,6 +15,7 @@ export default function LikeButton() {
             : "text-gray-500"
         }`}
       />
+      
     </button>
   );
 }

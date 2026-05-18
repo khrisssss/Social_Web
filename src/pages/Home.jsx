@@ -2,10 +2,12 @@ import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Avatar, AvatarBadge, AvatarFallback } from "@/components/ui/avatar"
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 import Header from "@/components/header"
 import { Heart } from "lucide-react"
 import LikeButton from "@/components/likeButton"
+import { timeAgo } from "@/utils/timeAgo"
+import AvatarUpload from "@/components/avatarUpload"
 
 export default function Home() {
     const [posts, setPosts] = useState([])
@@ -19,11 +21,19 @@ export default function Home() {
         fetchPosts()
     }, [])
 
+    useEffect(()=> {
+        
+    })
+
     async function fetchPosts() {
         try {
-            const res = await fetch(`${import.meta.env.VITE_URL_API}/posts/`)
+            const res = await fetch(`${import.meta.env.VITE_URL_API}/posts/`, {
+                headers: { "Authorization": `Bearer ${token}` }
+            })
             const data = await res.json()
             setPosts(data)
+            console.log(data)
+
         } catch {
             console.error("Impossible de charger les posts")
         } finally {
@@ -89,14 +99,14 @@ export default function Home() {
                     posts.map((post) => (
                         <Card key={post.id}>
                             <CardHeader className="pb-2">
-
                                 <CardTitle className="flex items-center gap-2">
                                     <Avatar className="h-10 w-10">
-                                        <AvatarFallback>CN</AvatarFallback>
+                                        <AvatarImage src={`${import.meta.env.VITE_URL_API}/uploads/${post.profil_photo}`} className="object-cover" />
+                                        <AvatarFallback>{post.pseudo?.[0]?.toUpperCase() ?? "?"}</AvatarFallback>
                                     </Avatar>
                                     <div>
-                                        <p className="text-sm font-semibold">{post.author}</p>
-                                        <p className="text-xs text-gray-400">Il y a 2 heures</p>
+                                        <p className="text-sm font-semibold">{post.pseudo}</p>
+                                        <p className="text-xs text-gray-400">{timeAgo(post.creation_date)}</p>
                                     </div>
                                 </CardTitle>
                             </CardHeader>
