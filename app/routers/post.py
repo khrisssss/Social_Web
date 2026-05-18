@@ -41,7 +41,7 @@ class creator(BaseModel):
 
 
 @router.get("/user/{user_id}")
-def get_user_posts(user_id: int):
+def get_user_posts(user_id: int, current_user: dict = Depends(get_current_user)):
     conn = get_connection()
     cursor = conn.cursor()
 
@@ -81,25 +81,24 @@ def get_all_post(current_user: dict = Depends(get_current_user)):
 
 class Likes(BaseModel):
     post_id: int
-    user_id: int
 
 @router.post("/like/{post_id}")
-def like_post(likes: Likes):
+def like_post(likes: Likes, current_user: dict = Depends(get_current_user)):
     conn = get_connection()
     cursor = conn.cursor()
     cursor.execute(
         "INSERT INTO like (user_id, message_id) VALUES (?, ?)",
-        (likes.user_id, likes.post_id),
+        (current_user["id"], likes.post_id),
     )
     conn.commit()
     conn.close()
     return {
         "message": "Liked successfully",
         "post_id": likes.post_id,
-        "user_id": likes.user_id,
+        "user_id": current_user["id"],
     }
 
-@router.get("/likes/{post_id}")
+@router.get("/likes/")
 def count_likes(post_id: int):
     #print("post id: ", likes.post_id)   
     conn = get_connection()
