@@ -35,7 +35,7 @@ async def generer_image(prompt: Prompt):
 
 class ImageAttribution(BaseModel):
     filename: str
-    
+
 @router.post("/image_user")
 async def attribuer_image(data : ImageAttribution, current_user: dict = Depends(get_current_user)):
     user_id = str(current_user["id"])
@@ -49,7 +49,7 @@ async def attribuer_image(data : ImageAttribution, current_user: dict = Depends(
         conn.close()
         raise HTTPException(status_code=404, detail="Utilisateur introuvable")
 
-    cursor.execute("UPDATE user SET profil_photo = ? WHERE id = ?", (filename, user_id))
+    cursor.execute("UPDATE user SET profil_photo = ? WHERE id = ?", (data.filename, user_id))
     conn.commit()
     conn.close()
 
